@@ -85,10 +85,10 @@ button { cursor: pointer; }
 .wallpaper-note {
   position: absolute;
   right: 16px;
-  bottom: 96px;
-  color: rgba(243, 241, 235, .07);
+  bottom: 70px;
+  color: rgba(243, 241, 235, .09);
   text-align: right;
-  font: 700 clamp(30px, 3.2vw, 56px)/.82 var(--display);
+  font: 700 clamp(50px, 5.4vw, 110px)/.8 var(--display);
   letter-spacing: -.105em;
   pointer-events: none;
   user-select: none;
