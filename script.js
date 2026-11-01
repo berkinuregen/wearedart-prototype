@@ -641,3 +641,29 @@ function updateClock() {
 
 updateClock();
 window.setInterval(updateClock, 30_000);
+
+if (window.matchMedia("(max-width: 640px)").matches) mainWindow.classList.add("is-minimized");
+
+(function runLogin() {
+  const login = document.querySelector("#login");
+  const dots = login.querySelector("#login-dots");
+  const button = login.querySelector("#login-button");
+  const cursor = login.querySelector("#login-cursor");
+  const place = (x, y) => { cursor.style.transform = `translate(${x}px, ${y}px)`; };
+  place(window.innerWidth * 0.75, window.innerHeight * 0.8);
+  const target = button.getBoundingClientRect();
+  const tx = target.left + target.width / 2 - 4;
+  const ty = target.top + target.height / 2 - 2;
+  const finish = () => {
+    login.classList.add("is-done");
+    window.setTimeout(() => login.remove(), 380);
+  };
+
+  for (let i = 1; i <= 8; i += 1) window.setTimeout(() => { dots.textContent = "•".repeat(i); }, 150 + i * 50);
+  window.setTimeout(() => {
+    cursor.style.transition = "transform .4s cubic-bezier(.4, 0, .2, 1)";
+    place(tx, ty);
+  }, 600);
+  window.setTimeout(() => button.classList.add("is-pressed"), 1030);
+  window.setTimeout(finish, 1100);
+})();

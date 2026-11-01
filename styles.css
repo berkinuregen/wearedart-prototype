@@ -573,3 +573,27 @@ button.path-crumb:hover { color: var(--orange); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.login {
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 38%, #2a140d, #0a0908 62%);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.login.is-done { opacity: 0; transform: scale(1.04); pointer-events: none; }
+.login-card { display: grid; justify-items: center; gap: 14px; width: min(280px, 80vw); }
+.login-logo { width: 74px; margin-bottom: 14px; opacity: .9; }
+.login-avatar { display: grid; width: 84px; height: 84px; place-items: center; border-radius: 50%; background: linear-gradient(145deg, #ff7a4d, #a63d22); color: #fff; font: 700 38px var(--display); box-shadow: 0 0 0 4px #ffffff14; }
+.login-user { color: #f3f1eb; font: 500 17px var(--display); }
+.login-field { display: flex; width: 100%; height: 38px; align-items: center; padding: 0 14px; border: 1px solid #ffffff2e; border-radius: 99px; background: #ffffff12; }
+.login-dots { color: #f3f1eb; font-size: 14px; letter-spacing: 4px; }
+.login-caret { width: 1px; height: 16px; margin-left: 2px; background: var(--orange); animation: caret .5s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+.login-button { padding: 8px 22px; border: 1px solid #ffffff33; border-radius: 99px; background: #ffffff1a; color: #f3f1eb; font: 500 12px var(--display); transition: background .1s, transform .1s; }
+.login-button.is-pressed { background: var(--orange); transform: scale(.94); }
+.login-cursor { position: absolute; z-index: 2; left: 0; top: 0; pointer-events: none; filter: drop-shadow(0 2px 3px #000a); }
+
+@media (max-width: 640px) {
+  .wallpaper-note { display: block; right: 50%; bottom: 16%; transform: translateX(50%); text-align: center; font-size: 26vw; letter-spacing: -.08em; }
+  .desktop-icons { display: grid; inset: 14px 8px auto; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .desktop-icon { position: relative; left: auto !important; top: auto !important; width: auto; }
+}
