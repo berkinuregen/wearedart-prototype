@@ -186,8 +186,8 @@ function openApp(appName) {
 
 function getExplorerRoot(root) {
   return root === "music"
-    ? { name: "Müzik", items: musicFolders, description: "SANATÇI · RESMİ VİDEOLAR" }
-    : { name: "İşler", items: workFolders, description: "VİDEO · GÖRSEL PRODÜKSİYON" };
+    ? { name: "Dart Music Co", items: musicFolders, description: "SANATÇI · RESMİ VİDEOLAR" }
+    : { name: "Dart Media Co", items: workFolders, description: "VİDEO · GÖRSEL PRODÜKSİYON" };
 }
 
 function renderExplorer() {
