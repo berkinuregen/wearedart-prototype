@@ -53,6 +53,17 @@
 
       <section class="workspace" aria-label="DART yaratıcı masaüstü">
         <div class="wallpaper-note" aria-hidden="true">WE<br />ARE<br />DART</div>
+        <aside class="spotify-panel" id="spotify-panel" aria-label="Spotify çalma listesi">
+          <div class="spotify-head">
+            <span class="spotify-title"><span class="eyebrow-dot"></span> ÇALMA LİSTESİ</span>
+            <span class="spotify-tabs" role="tablist">
+              <button type="button" class="is-active" data-playlist="37i9dQZF1DZ06evO2YgJGC" role="tab">Batuhan</button>
+              <button type="button" data-playlist="37i9dQZF1DZ06evO020kPW" role="tab">Melis</button>
+            </span>
+            <button type="button" class="spotify-toggle" id="spotify-toggle" aria-label="Çalma listesini küçült" aria-expanded="true">–</button>
+          </div>
+          <iframe id="spotify-frame" title="Spotify çalma listesi" src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO2YgJGC?theme=0" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </aside>
         <nav class="desktop-icons" aria-label="Masaüstü kısayolları">
           <button class="desktop-icon" data-open="work" aria-label="Dart Media Co klasörünü aç">
             <span class="folder-icon folder-orange"><span></span></span>

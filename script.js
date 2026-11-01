@@ -667,3 +667,21 @@ if (window.matchMedia("(max-width: 640px)").matches) mainWindow.classList.add("i
   window.setTimeout(() => button.classList.add("is-pressed"), 1030);
   window.setTimeout(finish, 1100);
 })();
+
+(function setupSpotify() {
+  const panel = document.querySelector("#spotify-panel");
+  const frame = panel.querySelector("#spotify-frame");
+  const toggle = panel.querySelector("#spotify-toggle");
+  toggle.addEventListener("click", () => {
+    const collapsed = panel.classList.toggle("is-collapsed");
+    toggle.textContent = collapsed ? "+" : "–";
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.setAttribute("aria-label", collapsed ? "Çalma listesini aç" : "Çalma listesini küçült");
+  });
+  panel.querySelectorAll("[data-playlist]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      panel.querySelectorAll("[data-playlist]").forEach((item) => item.classList.toggle("is-active", item === tab));
+      frame.src = `https://open.spotify.com/embed/playlist/${tab.dataset.playlist}?theme=0`;
+    });
+  });
+})();
