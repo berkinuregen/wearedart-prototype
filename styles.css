@@ -609,8 +609,30 @@ button.path-crumb:hover { color: var(--orange); }
 .spotify-tabs button { padding: 3px 9px; border: 0; border-radius: 99px; background: none; color: #b1ada5; font-size: 10px; cursor: pointer; }
 .spotify-tabs button.is-active { background: var(--orange); color: #fff; }
 .spotify-toggle { width: 22px; height: 22px; border: 0; border-radius: 50%; background: #ffffff12; color: #d6d3cc; font-size: 14px; line-height: 1; cursor: pointer; }
-.spotify-panel iframe { display: block; border: 0; }
-.spotify-panel.is-collapsed iframe { display: none; }
+.spotify-body { padding: 0 12px 12px; }
+.spotify-panel.is-collapsed .spotify-body { display: none; }
+.sp-now { display: flex; gap: 12px; align-items: center; }
+.sp-cover { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #222; border: 1px solid #ffffff1f; }
+.sp-meta { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.sp-meta strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.sp-meta span { overflow: hidden; color: #b1ada5; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.sp-meta .sp-time { font: 9px var(--mono, monospace); color: #8d8982; }
+.sp-meta i { font-style: normal; }
+.sp-bar { height: 12px; margin: 12px 0 6px; cursor: pointer; background: linear-gradient(#ffffff1f, #ffffff1f) center / 100% 3px no-repeat; }
+.sp-bar span { display: block; width: 0; height: 100%; background: linear-gradient(var(--orange), var(--orange)) center / 100% 3px no-repeat; }
+.sp-controls { display: flex; justify-content: center; align-items: center; gap: 16px; }
+.sp-controls button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: none; color: #d6d3cc; font-size: 13px; cursor: pointer; }
+.sp-controls button:hover { color: var(--orange); }
+.sp-controls .sp-play { width: 40px; height: 40px; background: var(--orange); color: #fff; font-size: 14px; }
+.sp-controls .sp-play:hover { color: #fff; filter: brightness(1.1); }
+.sp-list { max-height: 130px; margin: 10px 0 0; padding: 0; overflow-y: auto; list-style: none; border-top: 1px solid #ffffff1a; scrollbar-width: thin; }
+.sp-list li { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-size: 11px; color: #b1ada5; cursor: pointer; border-radius: 6px; }
+.sp-list li:hover { background: #ffffff0d; color: #fff; }
+.sp-list li.is-active { color: var(--orange); }
+.sp-list li span { font: 9px var(--mono, monospace); opacity: .6; }
+.sp-list li b { flex: 1; overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.sp-list li em { font: 9px var(--mono, monospace); font-style: normal; opacity: .6; }
+.sp-host { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 @media (max-width: 640px) {
   .spotify-panel { z-index: 1; top: 138px; right: 10px; left: 10px; width: auto; }
 }

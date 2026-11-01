@@ -670,18 +670,103 @@ if (window.matchMedia("(max-width: 640px)").matches) mainWindow.classList.add("i
 
 (function setupSpotify() {
   const panel = document.querySelector("#spotify-panel");
-  const frame = panel.querySelector("#spotify-frame");
-  const toggle = panel.querySelector("#spotify-toggle");
+  const $ = (id) => panel.querySelector(id);
+  const toggle = $("#spotify-toggle");
+  const list = $("#sp-list");
+  const playBtn = $("#sp-play");
+  const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}`;
+  let key = "batuhan";
+  let index = 0;
+  let controller = null;
+  let ready = false;
+  let wantPlay = false;
+  let paused = true;
+  let lastLoad = 0;
+  let pending = null;
+
+  const data = () => window.spotifyPlaylists[key];
+  const uri = (i) => `spotify:track:${data().tracks[i].u}`;
+
+  function renderTrack() {
+    const track = data().tracks[index];
+    $("#sp-cover").src = data().cover;
+    $("#sp-title").textContent = track.t;
+    $("#sp-artist").textContent = track.a;
+    $("#sp-cur").textContent = "0:00";
+    $("#sp-dur").textContent = fmt(track.d);
+    $("#sp-fill").style.width = "0%";
+    list.querySelectorAll("li").forEach((li, i) => li.classList.toggle("is-active", i === index));
+  }
+  function renderList() {
+    list.innerHTML = data().tracks.map((t, i) => `<li data-i="${i}"><span>${String(i + 1).padStart(2, "0")}</span><b>${t.t}</b><em>${fmt(t.d)}</em></li>`).join("");
+  }
+  function setPlayIcon() {
+    playBtn.textContent = paused ? "▶" : "❚❚";
+    playBtn.setAttribute("aria-label", paused ? "Çal" : "Duraklat");
+    panel.classList.toggle("is-playing", !paused);
+  }
+  function load(i, autoplay) {
+    index = (i + data().tracks.length) % data().tracks.length;
+    renderTrack();
+    wantPlay = autoplay;
+    lastLoad = Date.now();
+    if (!ready) return;
+    controller.loadUri(uri(index));
+    if (autoplay) controller.play();
+  }
+  function step(dir) { load(index + dir, !paused || wantPlay); }
+
+  window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    IFrameAPI.createController($("#sp-embed"), { uri: uri(index), width: 200, height: 152 }, (c) => {
+      controller = c;
+      c.addListener("ready", () => {
+        ready = true;
+        if (pending !== null) { const p = pending; pending = null; load(p.i, p.play); }
+      });
+      c.addListener("playback_update", ({ data: s }) => {
+        paused = s.isPaused;
+        setPlayIcon();
+        if (!s.duration) return;
+        $("#sp-fill").style.width = `${Math.min(100, (s.position / s.duration) * 100)}%`;
+        $("#sp-cur").textContent = fmt(s.position);
+        $("#sp-dur").textContent = fmt(s.duration);
+        if (s.position >= s.duration - 800 && Date.now() - lastLoad > 3000) step(1);
+      });
+    });
+  };
+  if (window.__spotifyApi) window.onSpotifyIframeApiReady(window.__spotifyApi);
+
+  playBtn.addEventListener("click", () => {
+    if (!ready) { pending = { i: index, play: true }; wantPlay = true; paused = false; setPlayIcon(); return; }
+    controller.togglePlay();
+  });
+  $("#sp-prev").addEventListener("click", () => step(-1));
+  $("#sp-next").addEventListener("click", () => step(1));
+  list.addEventListener("click", (e) => {
+    const li = e.target.closest("li");
+    if (!li) return;
+    if (!ready) { index = Number(li.dataset.i); renderTrack(); pending = { i: index, play: true }; paused = false; setPlayIcon(); return; }
+    load(Number(li.dataset.i), true);
+  });
+  $("#sp-bar").addEventListener("click", (e) => {
+    if (!ready) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    controller.seek(Math.floor(((e.clientX - r.left) / r.width) * (data().tracks[index].d / 1000)));
+  });
+  panel.querySelectorAll("[data-playlist]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      panel.querySelectorAll("[data-playlist]").forEach((t) => t.classList.toggle("is-active", t === tab));
+      key = tab.dataset.playlist;
+      renderList();
+      load(0, !paused);
+    });
+  });
   toggle.addEventListener("click", () => {
     const collapsed = panel.classList.toggle("is-collapsed");
     toggle.textContent = collapsed ? "+" : "–";
     toggle.setAttribute("aria-expanded", String(!collapsed));
     toggle.setAttribute("aria-label", collapsed ? "Çalma listesini aç" : "Çalma listesini küçült");
   });
-  panel.querySelectorAll("[data-playlist]").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      panel.querySelectorAll("[data-playlist]").forEach((item) => item.classList.toggle("is-active", item === tab));
-      frame.src = `https://open.spotify.com/embed/playlist/${tab.dataset.playlist}?theme=0`;
-    });
-  });
+  renderList();
+  renderTrack();
 })();
