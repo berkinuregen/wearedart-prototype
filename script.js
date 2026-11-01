@@ -155,6 +155,13 @@ function openApp(appName) {
     return;
   }
 
+  if (appName === "calendar") {
+    renderCalendar();
+    mainWindow.classList.remove("is-minimized", "is-hidden");
+    bringToFront();
+    return;
+  }
+
   const app = appContent[appName];
   if (!app) return;
   mainWindow.classList.remove("is-minimized", "is-hidden");
@@ -770,3 +777,90 @@ if (window.matchMedia("(max-width: 640px)").matches) mainWindow.classList.add("i
   renderList();
   renderTrack();
 })();
+
+// Örnek etkinlikler: bugüne göre gün farkıyla tanımlı, gerçek tarihlerle değiştirilecek.
+const calendarEvents = [
+  { offset: 4, time: "21:00", title: "Batuhan Kordel — Akustik Gece", place: "Kadıköy · İstanbul", type: "KONSER" },
+  { offset: 9, time: "20:30", title: "Melis Karaduman — BizBize Live Özel", place: "Beyoğlu · İstanbul", type: "CANLI KAYIT" },
+  { offset: 13, time: "10:00", title: "Klip Çekimi — Dart Media Co", place: "Stüdyo", type: "ÇEKİM" },
+  { offset: 18, time: "22:00", title: "DART Sahne Gecesi", place: "Karaköy · İstanbul", type: "KONSER" },
+  { offset: 24, time: "19:00", title: "Melis Karaduman — Açık Hava", place: "Ankara", type: "KONSER" },
+  { offset: 31, time: "15:00", title: "Yeni Single Lansmanı", place: "Dart Music Co", type: "LANSMAN" },
+].map((event) => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + event.offset);
+  return { ...event, date };
+});
+const calMonths = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const calState = { year: new Date().getFullYear(), month: new Date().getMonth(), selected: null };
+const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+(function setupCalendarIcon() {
+  const now = new Date();
+  document.querySelector("#cal-icon-month").textContent = calMonths[now.getMonth()].slice(0, 3).toUpperCase();
+  document.querySelector("#cal-icon-day").textContent = now.getDate();
+})();
+
+function renderCalendar() {
+  const { year, month } = calState;
+  const today = new Date();
+  const first = new Date(year, month, 1);
+  const offset = (first.getDay() + 6) % 7;
+  const days = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < offset; i += 1) cells.push('<span class="cal-cell is-empty"></span>');
+  for (let day = 1; day <= days; day += 1) {
+    const date = new Date(year, month, day);
+    const has = calendarEvents.some((event) => sameDay(event.date, date));
+    const classes = ["cal-cell", sameDay(date, today) && "is-today", has && "has-event", calState.selected && sameDay(date, calState.selected) && "is-selected"].filter(Boolean).join(" ");
+    cells.push(`<button type="button" class="${classes}" data-day="${day}">${day}</button>`);
+  }
+  const list = calendarEvents
+    .filter((event) => calState.selected ? sameDay(event.date, calState.selected) : event.date.getFullYear() === year && event.date.getMonth() === month)
+    .sort((a, b) => a.date - b.date);
+  const heading = calState.selected
+    ? `${calState.selected.getDate()} ${calMonths[calState.selected.getMonth()]}`
+    : `${calMonths[month]} etkinlikleri`;
+
+  sectionContent.innerHTML = `
+    <section class="app-page calendar-page">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> DART TAKVİM · KONSER & ETKİNLİK</div>
+      <div class="cal-layout">
+        <div class="cal-card">
+          <div class="cal-nav">
+            <button type="button" class="cal-step" data-cal-step="-1" aria-label="Önceki ay">‹</button>
+            <strong>${calMonths[month]} ${year}</strong>
+            <button type="button" class="cal-step" data-cal-step="1" aria-label="Sonraki ay">›</button>
+          </div>
+          <div class="cal-grid">
+            ${["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((name) => `<span class="cal-dow">${name}</span>`).join("")}
+            ${cells.join("")}
+          </div>
+        </div>
+        <div class="cal-events">
+          <div class="cal-events-head"><span>${heading}</span>${calState.selected ? '<button type="button" class="text-link" data-cal-clear>TÜMÜ</button>' : ""}</div>
+          ${list.length ? list.map((event) => `
+            <article class="cal-event">
+              <div class="cal-event-date"><b>${event.date.getDate()}</b><span>${calMonths[event.date.getMonth()].slice(0, 3).toUpperCase()}</span></div>
+              <div class="cal-event-info"><em>${event.type} · ${event.time}</em><strong>${event.title}</strong><span>${event.place}</span></div>
+            </article>`).join("") : '<p class="cal-empty">Bu tarihte etkinlik yok.</p>'}
+        </div>
+      </div>
+      <div class="app-note"><span class="eyebrow-dot"></span> ÖRNEK ETKİNLİKLER — GERÇEK TARİHLER YAKINDA</div>
+    </section>`;
+  mainWindow.querySelector(".window-title").textContent = "DART®  /  takvim";
+  sectionContent.querySelectorAll("[data-cal-step]").forEach((button) => button.addEventListener("click", () => {
+    const date = new Date(calState.year, calState.month + Number(button.dataset.calStep), 1);
+    calState.year = date.getFullYear();
+    calState.month = date.getMonth();
+    calState.selected = null;
+    renderCalendar();
+  }));
+  sectionContent.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
+    const date = new Date(year, month, Number(button.dataset.day));
+    calState.selected = calState.selected && sameDay(calState.selected, date) ? null : date;
+    renderCalendar();
+  }));
+  sectionContent.querySelector("[data-cal-clear]")?.addEventListener("click", () => { calState.selected = null; renderCalendar(); });
+}
