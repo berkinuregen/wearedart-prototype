@@ -84,10 +84,11 @@ button { cursor: pointer; }
 .workspace { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 .wallpaper-note {
   position: absolute;
-  right: 6.5%;
-  bottom: 17%;
-  color: rgba(243, 241, 235, .045);
-  font: 700 clamp(80px, 13vw, 190px)/.79 var(--display);
+  right: 28px;
+  bottom: 96px;
+  color: rgba(243, 241, 235, .07);
+  text-align: right;
+  font: 700 clamp(40px, 4.6vw, 72px)/.82 var(--display);
   letter-spacing: -.105em;
   pointer-events: none;
   user-select: none;
